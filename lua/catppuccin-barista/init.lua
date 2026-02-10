@@ -321,14 +321,14 @@ function M.setup(config, catppuccin_opts)
 		end
 	end
 
-	-- Load custom flavours (new API)
+	-- Load custom flavours
 	if config.flavours then
 		for name, def in pairs(config.flavours) do
 			M.register(name, def.palette, def.opts)
 		end
 	end
 
-	-- Legacy API: treat config as flavours map if no presets/flavours keys
+	-- Shorthand: treat config as flavours map if no presets/flavours keys
 	if not config.presets and not config.flavours then
 		for name, def in pairs(config) do
 			if type(def) == "table" and def.palette then

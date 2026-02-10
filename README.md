@@ -1,8 +1,11 @@
 # catppuccin-barista.nvim
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Neovim](https://img.shields.io/badge/Neovim-%3E%3D0.8.0-green.svg)](https://neovim.io)
+
 Create custom [catppuccin](https://github.com/catppuccin/nvim) flavours as first-class citizens.
 
-> **Why "barista"?** Catppuccin uses coffee terminology — its themes are called *flavours* (latte, frappe, macchiato, mocha). A *barista* is someone who crafts coffee drinks. This plugin lets you craft your own flavours.
+> **Why "barista"?** Catppuccin uses coffee terminology — its themes are called _flavours_ (latte, frappe, macchiato, mocha). A _barista_ is someone who crafts coffee drinks. This plugin lets you craft your own flavours.
 
 This plugin monkey-patches catppuccin/nvim to support custom flavours with full integration:
 
@@ -10,6 +13,17 @@ This plugin monkey-patches catppuccin/nvim to support custom flavours with full 
 - `:Catppuccin <your-flavour>` command
 - `highlight_overrides` support
 - Automatic compilation
+
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Presets](#presets)
+- [API](#api)
+- [How It Works](#how-it-works)
+- [Development](#development)
+- [License](#license)
 
 ## Requirements
 
@@ -48,6 +62,7 @@ The easiest way to get started — use built-in presets:
 require("catppuccin-barista").setup({
   presets = { "espresso" },
 }, {
+  -- Options passed to catppuccin.setup()
   flavour = "espresso",
 })
 ```
@@ -58,6 +73,7 @@ Enable all available presets:
 require("catppuccin-barista").setup({
   presets = true,
 }, {
+  -- Options passed to catppuccin.setup()
   flavour = "espresso",
 })
 ```
@@ -117,6 +133,18 @@ require("catppuccin-barista").setup({
         crust     = "#11111b",
       },
     },
+  },
+}, {
+  flavour = "my_theme",
+})
+```
+
+Shorthand without `flavours` key:
+
+```lua
+require("catppuccin-barista").setup({
+  my_theme = {
+    palette = { --[[ 26 colors ]] },
   },
 }, {
   flavour = "my_theme",
@@ -185,18 +213,20 @@ Available built-in presets:
 
 Main setup function. Combines register + apply + catppuccin.setup.
 
-| Parameter                | Type                              | Description                            |
-| ------------------------ | --------------------------------- | -------------------------------------- |
-| `config.presets`         | `string[]\|boolean`               | Preset names to enable, or `true` for all |
-| `config.flavours`        | `table<string, {palette, opts?}>` | Custom flavour definitions             |
-| `catppuccin_opts`        | `table?`                          | Options passed to `catppuccin.setup()` |
+| Parameter         | Type                              | Description                               |
+| ----------------- | --------------------------------- | ----------------------------------------- |
+| `config.presets`  | `string[]\|boolean`               | Preset names to enable, or `true` for all |
+| `config.flavours` | `table<string, {palette, opts?}>` | Custom flavour definitions                |
+| `catppuccin_opts` | `table?`                          | Options passed to `catppuccin.setup()`    |
 
 ### `barista.get_presets()`
 
 Returns a list of available preset names.
 
 ```lua
-require("catppuccin-barista").get_presets() -- { "espresso" }
+local presets = require("catppuccin-barista").get_presets()
+-- Returns: { "darkroast", "draculatte", "espresso", "gruvbrew",
+--            "kanagato", "nightbrew", "nordiccino", "rosetto", "solarbica" }
 ```
 
 ### `barista.register(name, palette, opts?)`
@@ -215,8 +245,8 @@ Returns `boolean` — `true` if registration succeeded.
 
 Remove a previously registered flavour.
 
-| Parameter | Type     | Description          |
-| --------- | -------- | -------------------- |
+| Parameter | Type     | Description            |
+| --------- | -------- | ---------------------- |
 | `name`    | `string` | Flavour name to remove |
 
 Returns `boolean` — `true` if removal succeeded.
