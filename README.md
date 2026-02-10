@@ -19,6 +19,7 @@ This plugin monkey-patches catppuccin/nvim to support custom flavours with full 
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Screenshots](#screenshots)
 - [Presets](#presets)
 - [API](#api)
 - [How It Works](#how-it-works)
@@ -190,6 +191,22 @@ require("catppuccin").setup({
   flavour = "my_theme",
 })
 ```
+
+## Screenshots
+
+Preview of the built-in presets (screenshots are in the `assets/` directory):
+
+| Flavour      | Preview                              |
+| ------------ | ------------------------------------ |
+| `espresso`   | ![espresso](assets/espresso.png)     |
+| `darkroast`  | ![darkroast](assets/darkroast.png)   |
+| `draculatte` | ![draculatte](assets/draculatte.png) |
+| `gruvbrew`   | ![gruvbrew](assets/gruvbrew.png)     |
+| `kanagato`   | ![kanagato](assets/kanagato.png)     |
+| `nightbrew`  | ![nightbrew](assets/nightbrew.png)   |
+| `nordiccino` | ![nordiccino](assets/nordiccino.png) |
+| `rosetto`    | ![rosetto](assets/rosetto.png)       |
+| `solarbica`  | ![solarbica](assets/solarbica.png)   |
 
 ## Presets
 
