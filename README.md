@@ -62,8 +62,9 @@ The easiest way to get started — use built-in presets:
 ```lua
 require("catppuccin-barista").setup({
   presets = { "espresso" },
-}, {
-  -- Options passed to catppuccin.setup()
+})
+
+require("catppuccin").setup({
   flavour = "espresso",
 })
 ```
@@ -73,8 +74,9 @@ Enable all available presets:
 ```lua
 require("catppuccin-barista").setup({
   presets = true,
-}, {
-  -- Options passed to catppuccin.setup()
+})
+
+require("catppuccin").setup({
   flavour = "espresso",
 })
 ```
@@ -92,7 +94,8 @@ require("catppuccin-barista").setup({
   config = function(_, opts)
     require("catppuccin-barista").setup({
       presets = { "espresso" },
-    }, opts)
+    })
+    require("catppuccin").setup(opts)
   end,
 }
 ```
@@ -135,7 +138,9 @@ require("catppuccin-barista").setup({
       },
     },
   },
-}, {
+})
+
+require("catppuccin").setup({
   flavour = "my_theme",
 })
 ```
@@ -147,7 +152,9 @@ require("catppuccin-barista").setup({
   my_theme = {
     palette = { --[[ 26 colors ]] },
   },
-}, {
+})
+
+require("catppuccin").setup({
   flavour = "my_theme",
 })
 ```
@@ -163,7 +170,9 @@ require("catppuccin-barista").setup({
       opts = { background = "light" },
     },
   },
-}, {
+})
+
+require("catppuccin").setup({
   flavour = "espresso",
 })
 ```
@@ -226,15 +235,23 @@ Available built-in presets:
 
 ## API
 
-### `barista.setup(config, catppuccin_opts?)`
+### `barista.setup(config)`
 
-Main setup function. Combines register + apply + catppuccin.setup.
+Main setup function. Combines register + apply. Call **before** `catppuccin.setup()`.
 
 | Parameter         | Type                              | Description                               |
 | ----------------- | --------------------------------- | ----------------------------------------- |
 | `config.presets`  | `string[]\|boolean`               | Preset names to enable, or `true` for all |
 | `config.flavours` | `table<string, {palette, opts?}>` | Custom flavour definitions                |
-| `catppuccin_opts` | `table?`                          | Options passed to `catppuccin.setup()`    |
+
+### `barista.get_flavours()`
+
+Returns all registered flavours.
+
+```lua
+local flavours = require("catppuccin-barista").get_flavours()
+-- Returns: { espresso = { palette = {...}, background = "dark" }, ... }
+```
 
 ### `barista.get_presets()`
 
@@ -292,7 +309,7 @@ This plugin patches catppuccin in several ways:
 
 1. **Module injection**: Injects your palette into `package.loaded["catppuccin.palettes.<name>"]`
 2. **Flavour registration**: Adds your flavour to `catppuccin.flavours` table
-3. **Colorscheme files**: Creates `colors/catppuccin-<name>.vim` in a cache directory
+3. **Colorscheme files**: Creates `colors/catppuccin-<name>.lua` in a cache directory
 4. **Palette wrapper**: Wraps `get_palette()` to ensure palettes stay available
 
 ## Development

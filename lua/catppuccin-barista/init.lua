@@ -6,7 +6,7 @@
 --- integration: :colorscheme, :Catppuccin command, highlight_overrides, etc.
 ---
 --- How catppuccin works internally:
----   1. :colorscheme catppuccin-<X>  ->  loads colors/catppuccin-<X>.vim
+---   1. :colorscheme catppuccin-<X>  ->  loads colors/catppuccin-<X>.lua
 ---   2. That file calls              ->  require("catppuccin").load("<X>")
 ---   3. load() validates <X> via     ->  M.flavours table
 ---   4. load() reads compiled cache  ->  compile_path/<X>  (binary bytecode)
@@ -18,7 +18,7 @@
 --- This plugin patches:
 ---   a) Inject palette into package.loaded["catppuccin.palettes.<name>"]
 ---   b) Add name to catppuccin.flavours table (validation + compile iteration)
----   c) Create colors/catppuccin-<name>.vim in runtimepath (for :colorscheme)
+---   c) Create colors/catppuccin-<name>.lua in runtimepath (for :colorscheme)
 ---   d) Wrap get_palette to ensure palette is always available
 ---@brief ]]
 
@@ -148,6 +148,12 @@ function M.register(name, palette, opts)
 	return true
 end
 
+--- Get all registered flavours.
+---@return table<string, CatppuccinBaristaFlavour>
+function M.get_flavours()
+	return M._flavours
+end
+
 --- Unregister a previously registered flavour.
 --- Note: This only removes from internal registry. To fully clean up,
 --- you may need to restart Neovim or manually clear package.loaded.
@@ -169,8 +175,8 @@ function M.unregister(name)
 	end
 
 	-- Remove colorscheme file
-	local vim_file = vim.fn.stdpath("cache") .. "/catppuccin-barista/colors/catppuccin-" .. name .. ".vim"
-	os.remove(vim_file)
+	local lua_file = vim.fn.stdpath("cache") .. "/catppuccin-barista/colors/catppuccin-" .. name .. ".lua"
+	os.remove(lua_file)
 
 	return true
 end
@@ -208,40 +214,42 @@ function M.apply()
 		end
 	end
 
-	-- (c) Create colors/catppuccin-<name>.vim files
+	-- (c) Create colors/catppuccin-<name>.lua files
 	--     in a temp runtimepath directory so that
 	--     :colorscheme catppuccin-<name> resolves
 	local colors_dir = vim.fn.stdpath("cache") .. "/catppuccin-barista/colors"
 	vim.fn.mkdir(colors_dir, "p")
 
-	-- Clean up stale colorscheme files
-	local existing_files = vim.fn.glob(colors_dir .. "/catppuccin-*.vim", false, true)
-	for _, file in ipairs(existing_files) do
-		local flavour_name = file:match("catppuccin%-(.+)%.vim$")
-		if flavour_name and not M._flavours[flavour_name] then
-			os.remove(file)
+	-- Clean up stale colorscheme files (.lua and legacy .vim)
+	for _, ext in ipairs({ "lua", "vim" }) do
+		local existing_files = vim.fn.glob(colors_dir .. "/catppuccin-*." .. ext, false, true)
+		for _, file in ipairs(existing_files) do
+			local flavour_name = file:match("catppuccin%-(.+)%." .. ext .. "$")
+			if flavour_name and (ext == "vim" or not M._flavours[flavour_name]) then
+				os.remove(file)
+			end
 		end
 	end
 
 	for name, def in pairs(M._flavours) do
-		local vim_file = colors_dir .. "/catppuccin-" .. name .. ".vim"
+		local lua_file = colors_dir .. "/catppuccin-" .. name .. ".lua"
 
 		-- Set vim.o.background based on flavour definition
 		local bg_cmd = ("vim.o.background = '%s'"):format(def.background)
 		local load_cmd = ('require("catppuccin").load("%s")'):format(name)
-		local content = ("lua %s; %s"):format(bg_cmd, load_cmd)
+		local content = ("%s\n%s\n"):format(bg_cmd, load_cmd)
 
 		-- Only write if missing or changed
-		local f = io.open(vim_file, "r")
+		local f = io.open(lua_file, "r")
 		local existing = f and f:read("*a") or nil
 		if f then
 			f:close()
 		end
 
 		if existing ~= content then
-			f = io.open(vim_file, "w")
+			f = io.open(lua_file, "w")
 			if not f then
-				vim.notify(("[catppuccin-barista] failed to write %s"):format(vim_file), vim.log.levels.WARN)
+				vim.notify(("[catppuccin-barista] failed to write %s"):format(lua_file), vim.log.levels.WARN)
 			else
 				f:write(content)
 				f:close()
@@ -293,11 +301,9 @@ function M.get_presets()
 	return vim.tbl_keys(presets)
 end
 
---- Convenience: register + apply + setup in one shot.
+--- Convenience: register + apply in one shot.
 ---@param config CatppuccinBaristaConfig|table<string, CatppuccinBaristaFlavourDef> Config or legacy flavours map
----@param catppuccin_opts? table Options passed to catppuccin.setup()
-function M.setup(config, catppuccin_opts)
-	catppuccin_opts = catppuccin_opts or {}
+function M.setup(config)
 	config = config or {}
 
 	-- Load presets
@@ -338,8 +344,6 @@ function M.setup(config, catppuccin_opts)
 	end
 
 	M.apply()
-
-	require("catppuccin").setup(catppuccin_opts)
 end
 
 return M

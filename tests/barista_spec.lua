@@ -207,13 +207,13 @@ describe("catppuccin-barista", function()
 			-- Mock catppuccin to avoid requiring it
 			package.loaded["catppuccin"] = {
 				flavours = {},
-				setup = function() end,
+
 			}
 			package.loaded["catppuccin.palettes"] = {
 				get_palette = function() return {} end,
 			}
 
-			barista.setup({ presets = true }, {})
+			barista.setup({ presets = true })
 
 			assert.is_not_nil(barista._flavours["espresso"])
 			assert.is_not_nil(barista._flavours["draculatte"])
@@ -226,13 +226,13 @@ describe("catppuccin-barista", function()
 		it("should register specific presets", function()
 			package.loaded["catppuccin"] = {
 				flavours = {},
-				setup = function() end,
+
 			}
 			package.loaded["catppuccin.palettes"] = {
 				get_palette = function() return {} end,
 			}
 
-			barista.setup({ presets = { "espresso", "gruvbrew" } }, {})
+			barista.setup({ presets = { "espresso", "gruvbrew" } })
 
 			assert.is_not_nil(barista._flavours["espresso"])
 			assert.is_not_nil(barista._flavours["gruvbrew"])
@@ -245,7 +245,7 @@ describe("catppuccin-barista", function()
 		it("should register custom flavours", function()
 			package.loaded["catppuccin"] = {
 				flavours = {},
-				setup = function() end,
+
 			}
 			package.loaded["catppuccin.palettes"] = {
 				get_palette = function() return {} end,
@@ -255,7 +255,7 @@ describe("catppuccin-barista", function()
 				flavours = {
 					custom_theme = { palette = valid_palette },
 				},
-			}, {})
+			})
 
 			assert.is_not_nil(barista._flavours["custom_theme"])
 
@@ -266,7 +266,7 @@ describe("catppuccin-barista", function()
 		it("should support legacy API (direct flavours map)", function()
 			package.loaded["catppuccin"] = {
 				flavours = {},
-				setup = function() end,
+
 			}
 			package.loaded["catppuccin.palettes"] = {
 				get_palette = function() return {} end,
@@ -274,7 +274,7 @@ describe("catppuccin-barista", function()
 
 			barista.setup({
 				legacy_theme = { palette = valid_palette },
-			}, {})
+			})
 
 			assert.is_not_nil(barista._flavours["legacy_theme"])
 
@@ -302,7 +302,7 @@ describe("catppuccin-barista", function()
 		it("should inject palette into package.loaded", function()
 			package.loaded["catppuccin"] = {
 				flavours = {},
-				setup = function() end,
+
 			}
 			package.loaded["catppuccin.palettes"] = {
 				get_palette = function() return {} end,
@@ -321,7 +321,7 @@ describe("catppuccin-barista", function()
 		it("should add flavour to catppuccin.flavours table", function()
 			local catppuccin_mock = {
 				flavours = { mocha = 1, latte = 2 },
-				setup = function() end,
+
 			}
 			package.loaded["catppuccin"] = catppuccin_mock
 			package.loaded["catppuccin.palettes"] = {
