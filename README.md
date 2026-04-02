@@ -21,6 +21,8 @@ This plugin monkey-patches catppuccin/nvim to support custom flavours with full 
 - [Usage](#usage)
 - [Screenshots](#screenshots)
 - [Presets](#presets)
+- [Beautifier (optional)](#beautifier-optional)
+- [Utilities](#utilities)
 - [API](#api)
 - [How It Works](#how-it-works)
 - [Development](#development)
@@ -232,6 +234,30 @@ Available built-in presets:
 | `nordiccino` | Nord        | Arctic, north-bluish color palette        |
 | `rosetto`    | Rosé Pine   | Soho vibes with a dark, muted aesthetic   |
 | `solarbica`  | Solarized   | Precision colors for machines and people  |
+
+## Beautifier (optional)
+
+The `beautifier` module is a **lazy.nvim** plugin spec (not loaded by `require("catppuccin-barista")` automatically). It augments [catppuccin/nvim](https://github.com/catppuccin/nvim) with opinionated highlight overrides for many plugins (Neo-tree, Noice, Snacks, Git Signs, Diffview, Trouble, Blink completion, and others), plus integration specs for **bufferline.nvim** and **lualine.nvim** that refresh when the `catppuccin*` colorscheme changes.
+
+Enable it by importing the module in your lazy spec (after this plugin is available on the runtime path):
+
+```lua
+require("lazy").setup({
+  spec = {
+    { "aimuzov/catppuccin-barista.nvim" },
+    { import = "catppuccin-barista.beautifier" },
+    -- ...
+  },
+})
+```
+
+Call `require("catppuccin-barista").setup(...)` and `require("catppuccin").setup(...)` as usual (see [Usage](#usage)). If you set `highlight_overrides` in catppuccin opts, those are **merged** with the beautifier’s overrides (`vim.tbl_deep_extend("force", ...)`), so your callbacks can extend or override the bundled groups.
+
+Barista-registered flavours use each flavour’s `background` (`"dark"` / `"light"`) to pick the right tweak set where applicable.
+
+## Utilities
+
+`require("catppuccin-barista.util").color_blend(color_first, color_second, percentage)` blends two `#RRGGBB` strings. `percentage` is the weight of `color_second` (0–100). Used internally by the beautifier; you may reuse it for custom highlights or tooling.
 
 ## API
 
