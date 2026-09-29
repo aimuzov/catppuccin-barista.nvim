@@ -64,6 +64,7 @@ local override_all = function(c)
 		GlanceWinBarFilename = { link = "GlanceWinBarTitle" },
 		GlanceWinBarFilepath = { link = "GlanceWinBarTitle" },
 		GlanceWinBarTitle = { fg = c.overlay0, bg = blend(c.base, c.crust, 50), style = { "bold" } },
+		InlineFold = { fg = c.blue, style = { "bold" } },
 		LazyReasonKeys = { fg = c.overlay0 },
 		LineNr = { fg = c.surface2 },
 		LspInlayHint = { bg = c.none },
